@@ -42,6 +42,12 @@ class App extends React.Component {
     }
   }
 
+  componentWillUnmount = () => {
+    this.setState = (state, callback) => {
+      return;
+    };
+  };
+
   buttonsStatus() {
     if (this.state.disconnectBtnDisabled && this.state.token && this.state.roomID) {
       this.setState({ connectBtnDisabled: false });
