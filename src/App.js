@@ -22,6 +22,7 @@ class App extends React.Component {
     this.state = {
       token: '',
       roomID: '',
+      WSURL: '',
       message: '',
       logs: '',
       connectBtnDisabled: true,
@@ -40,6 +41,10 @@ class App extends React.Component {
     if (localStorage.getItem('wsRoomID')) {
       this.inputChangeHandle(localStorage.getItem('wsRoomID'), 'RoomID');
     }
+
+    if (localStorage.getItem('wsWSURL')) {
+      this.inputChangeHandle(localStorage.getItem('wsWSURL'), 'WSURL');
+    }
   }
 
   componentWillUnmount = () => {
@@ -49,7 +54,7 @@ class App extends React.Component {
   };
 
   buttonsStatus() {
-    if (this.state.disconnectBtnDisabled && this.state.token && this.state.roomID) {
+    if (this.state.disconnectBtnDisabled && this.state.WSURL) {
       this.setState({ connectBtnDisabled: false });
     } else {
       this.setState({ connectBtnDisabled: true });
@@ -71,6 +76,11 @@ class App extends React.Component {
       this.setState({
         message: value,
         sendBtnDisabled: !(value && !this.state.disconnectBtnDisabled),
+      });
+    } else if (label === 'WSURL') {
+      this.setState({ WSURL: value }, () => {
+        this.buttonsStatus();
+        localStorage.setItem('wsWSURL', this.state.WSURL);
       });
     }
   }
@@ -110,9 +120,7 @@ class App extends React.Component {
     this.setState({
       connectIsLoading: true,
     });
-    this.ws = new WebSocket(
-      `wss://connect.websocket.in/v2/${this.state.roomID}?token=${this.state.token}`
-    );
+    this.ws = new WebSocket(this.state.WSURL);
     this.socketHandle();
   }
 
@@ -152,16 +160,9 @@ class App extends React.Component {
               <h1 className="title">WebSocket</h1>
               <h2 className="subtitle">To test websocket!</h2>
               <CommonInput
-                label="Token"
-                placeholder="Token"
-                value={this.state.token}
-                onInputChange={this.inputChangeHandle}
-              ></CommonInput>
-
-              <CommonInput
-                label="RoomID"
-                placeholder="RoomID"
-                value={this.state.roomID}
+                label="WSURL"
+                placeholder="WSURL"
+                value={this.state.WSURL}
                 onInputChange={this.inputChangeHandle}
               ></CommonInput>
               <div className="field is-grouped">
